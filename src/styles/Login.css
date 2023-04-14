@@ -1,0 +1,21 @@
+.login-container {
+  height: 100vh;
+  margin-top: 1%;
+}
+
+.login-form-container {
+  background-color: #fff;
+  border-radius: 5px;
+  padding: 30px;
+  box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+}
+
+.btn-block {
+  margin-top: 20px;
+}
+
+@media (max-width: 767px) {
+  .login-form-container {
+    padding: 20px;
+  }
+}
