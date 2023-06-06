@@ -1,5 +1,7 @@
 import React from "react";
 import { Container, Row, Col, Button } from "react-bootstrap";
+import Botonbacan from '../pages/Botonbacan';
+
 
 const Home = () => {
   return (
@@ -43,7 +45,6 @@ const Home = () => {
           </Row>
         </Col>
       </Row>
-      <hr></hr>
     </Container>
   );
 };

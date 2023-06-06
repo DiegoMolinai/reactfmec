@@ -3,7 +3,7 @@ import { Navbar, Nav } from "react-bootstrap";
 
 const Header = () => {
   return (
-    <Navbar bg="primary" expand="lg">
+    <Navbar expand="lg" style={{backgroundColor:"#222f3e"}}>
       <Navbar.Brand href="/">
       <h1>FMEC</h1>
       </Navbar.Brand>
