@@ -1,142 +1,126 @@
-import React, { useState, useEffect, useRef, useLayoutEffect } from "react";
-import {
-  Form,
-  FormControl,
-  Button,
-  ListGroup,
-  Container,
-  Row,
-  Col,
-  Card,
-  Table,
-} from "react-bootstrap";
-import { faker } from "@faker-js/faker";
+import React, { useState, useEffect } from 'react';
+import { Button, Modal, Form, Table, Pagination } from 'react-bootstrap';
+import { Add, Edit, Delete, Visibility } from '@mui/icons-material';
 
-const Inventario = ({ numberOfItems = 100 }) => {
-  const [searchTerm, setSearchTerm] = useState("");
-  const [showForm, setShowForm] = useState(false);
+const Inventario = () => {
   const [allItems, setAllItems] = useState([]);
   const [visibleItems, setVisibleItems] = useState([]);
   const [selectedIndex, setSelectedIndex] = useState(null);
-  const [prevSelectedIndex, setPrevSelectedIndex] = useState(null);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [itemsPerPage, setItemsPerPage] = useState(10);
+  const [show, setShow] = useState(false);
 
-  // Generar una lista de elementos aleatorios en la carga inicial del componente
+  const handleClose = () => setShow(false);
+  const handleShow = () => setShow(true);
+
   useEffect(() => {
-    const items = Array.from({ length: numberOfItems }, () => ({
-      name: faker.commerce.productName(),
-      price: faker.commerce.price(),
-      quantity: faker.datatype.number({ min: 0, max: 100 }),
-      category: faker.commerce.department(),
-    }));
-    setAllItems(items);
-    setVisibleItems(items.slice(0, 100)); // Mostrar los primeros 10 elementos en la lista
-  }, [numberOfItems]);
+    fetch('http://localhost:9000/api/productos')
+      .then((res) => res.json())
+      .then((data) => {
+        setAllItems(data);
+        setVisibleItems(data.slice(0, itemsPerPage));
+      });
+  }, []);
 
-  const handleSearch = (event) => {
-    const searchTerm = event.target.value;
-    setSearchTerm(searchTerm);
-
-    // Filtrar la lista completa de elementos según el término de búsqueda
-    const filteredItems = allItems.filter((item) =>
-      item.name.toLowerCase().includes(searchTerm.toLowerCase())
-    );
-
-    // Actualizar la lista de elementos visibles
-    setVisibleItems(filteredItems.slice(0, 100)); // Mostrar los primeros 10 elementos en la lista
-    setSelectedIndex(null);
-  };
-
-  const handleFormClose = () => {
-    setShowForm(false);
-    setSelectedIndex(null);
-  };
-
-  const handleItemSelected = (index) => {
-    setSelectedIndex(index);
-    if (index === prevSelectedIndex) {
-      setSelectedIndex(null);
-      setPrevSelectedIndex(null);
-    } else {
-      setPrevSelectedIndex(index);
-    }
-  };
-
-  const handleCloseCard = () => {
-    setSelectedIndex(null);
-    setPrevSelectedIndex(null);
+  const handlePageChange = (pageNumber) => {
+    setCurrentPage(pageNumber);
+    const startIndex = (pageNumber - 1) * itemsPerPage;
+    setVisibleItems(allItems.slice(startIndex, startIndex + itemsPerPage));
   };
 
   return (
-    <Container style={{ marginTop: "1vh" }}>
-      <Row className="justify-content-center" style={{ marginBottom: "1vh" }}>
-        <Col xs={6} md={6}>
-          <div className="d-flex justify-content-between">
-            <Button>Boton1</Button>
-            <Button>Boton2</Button>
-            <Button>Boton3</Button>
-          </div>
-        </Col>
-        <Col>
-          <Form inline>
-            <FormControl
-              type="text"
-              placeholder="Search"
-              className="mr-sm-2"
-              value={searchTerm}
-              onChange={handleSearch}
-            />
-          </Form>
-        </Col>
-      </Row>
-      <Row>
-        <Col xs={6} md={12} style={{ maxHeight: "50vh", overflowY: "auto", marginTop: "10px" }}>
-          <Table
-            striped
-            bordered
-            hover
+    <div style={{ marginTop: '1vh' }}>
+      <div className="d-flex justify-content-between align-items-center">
+        <h2>Inventario</h2>
+        <Button variant="primary" onClick={handleShow}>
+          <Add />
+          Agregar Producto
+        </Button>
+      </div>
+      <Table striped bordered hover style={{ marginTop: '10px' }}>
+        {/* Aquí va el resto de tu código JSX... */}
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>Nombre Producto</th>
+            <th>Precio</th>
+            <th>Cantidad</th>
+            <th>Categoría</th>
+            <th>Acciones</th>
+          </tr>
+        </thead>
+        <tbody>
+          {visibleItems.map((item, index) => (
+            <tr key={index}>
+              <td>{item.id}</td>
+              <td>{item.nombre}</td>
+              <td>{item.precio}</td>
+              <td>{item.cantidad}</td>
+              <td>{item.categoria}</td>
+              <td>
+                <Button variant="outline-primary" className="mr-2">
+                  <Visibility />
+                </Button>
+                <Button variant="outline-success" className="mr-2">
+                  <Edit />
+                </Button>
+                <Button variant="outline-danger">
+                  <Delete />
+                </Button>
+              </td>
+            </tr>
+          ))}
+        </tbody>
+      </Table>
+      <Pagination>
+        {[...Array(Math.ceil(allItems.length / itemsPerPage))].map((e, i) => (
+          <Pagination.Item
+            key={i + 1}
+            active={i + 1 === currentPage}
+            onClick={() => handlePageChange(i + 1)}
           >
-            <thead>
-              <tr style={{position:"sticky", top:"0", backgroundColor:"white"}}>
-                <th scope="col">ID</th>
-                <th scope="col">Nombre Producto</th>
-                <th scope="col">Precio</th>
-                <th scope="col">Cantidad</th>
-                <th scope="col">Categoria</th>
-              </tr>
-            </thead>
-            <tbody>
-              {visibleItems.map((item, index) => (
-                <tr
-                  key={index}
-                  className={selectedIndex === index ? "table-primary" : ""}
-                  onClick={() => handleItemSelected(index)}
-                >
-                  <td>{index}</td>
-                  <td>{item.name}</td>
-                  <td>{item.price}</td>
-                  <td>{item.quantity}</td>
-                  <td>{item.category}</td>
-                </tr>
-              ))}
-            </tbody>
-          </Table>
-        </Col>
-      </Row>
-      <Row>
-        {selectedIndex !== null && (
-          <Card style={{ marginTop: "10px" }}>
-            <Card.Header>Selected Item</Card.Header>
-            <Card.Body>
-              <Card.Title>{visibleItems[selectedIndex].name}</Card.Title>
-              <Card.Text>Some additional information here.</Card.Text>
-              <Button variant="secondary" onClick={() => handleCloseCard()}>
-                Close
-              </Button>
-            </Card.Body>
-          </Card>
-        )}
-      </Row>
-    </Container>
+            {i + 1}
+          </Pagination.Item>
+        ))}
+      </Pagination>
+      <Modal show={show} onHide={handleClose}>
+  <Modal.Header closeButton>
+    <Modal.Title>Agregar Producto</Modal.Title>
+  </Modal.Header>
+  <Modal.Body>
+    <Form>
+      <Form.Group className="mb-3">
+        <Form.Label>ID Producto</Form.Label>
+        <Form.Control type="text" placeholder="Ingrese ID del producto" />
+      </Form.Group>
+      <Form.Group className="mb-3">
+        <Form.Label>Nombre Producto</Form.Label>
+        <Form.Control type="text" placeholder="Ingrese nombre del producto" />
+      </Form.Group>
+      <Form.Group className="mb-3">
+        <Form.Label>Precio</Form.Label>
+        <Form.Control type="number" placeholder="Ingrese precio del producto" />
+      </Form.Group>
+      <Form.Group className="mb-3">
+        <Form.Label>Cantidad</Form.Label>
+        <Form.Control type="number" placeholder="Ingrese cantidad del producto" />
+      </Form.Group>
+      <Form.Group className="mb-3">
+        <Form.Label>Categoría</Form.Label>
+        <Form.Control type="text" placeholder="Ingrese categoría del producto" />
+      </Form.Group>
+    </Form>
+  </Modal.Body>
+  <Modal.Footer>
+    <Button variant="secondary" onClick={handleClose}>
+      Cerrar
+    </Button>
+    <Button variant="primary" onClick={handleClose}>
+      Guardar Cambios
+    </Button>
+  </Modal.Footer>
+</Modal>
+    </div>
   );
 };
 

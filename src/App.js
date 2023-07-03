@@ -9,7 +9,16 @@ import Lista from "./pages/Lista";
 import Admin from "./pages/Admin";
 import Inventario from "./pages/Inventario";
 import SignIn from "./pages/SignIn"
-import Dashboard from "./pages/Dashboard";
+import Dashboard from "./pages/Dashboard"; 
+import Dashtest from "./pages/Dashtest";
+import ReviewComponent from "./pages/panelDeControl/ReviewComponent"
+import ServiceManagementApp from "./pages/gestionServicios/ServiceManagementApp";
+import VentasManagementApp from "./pages/gestionVentas/VentasManagementApp";
+import RevisionManagementApp from "./pages/gestionRevision/RevisionManagementApp";
+import RecibirSolicitud from "./pages/recibirSolicitud/RecibirSolicitud";
+import Notificaciones from "./pages/barraLateralNavegador/Notificaciones";
+import ManejoNotificaciones from "./pages/manejarNotificaciones/ManejoNotificaciones";
+import ListaVentas from "./pages/testeo/ListaVentas";
 
 function App() {
   return (
@@ -17,12 +26,15 @@ function App() {
       <Routes>
         <Route path="/" element={<AppLayout />}>
           <Route index element={<Home />} />
-          <Route path="ventas" element={<Ventas />} />
+          <Route path="ventas" element={<ListaVentas />} />
           <Route path="login" element={<SignIn />} />
           <Route path="lista" element={<Lista />} />
-          <Route path="admin" element={<Admin />} />
+          <Route path="admin" element={<ManejoNotificaciones />} />
           <Route path="inventario" element={<Inventario />} />
-          <Route path="reportes" element ={<Dashboard/>}/>
+          <Route path="reportes" element ={<ReviewComponent />}/>
+          <Route path="servicios" element={<ServiceManagementApp />} />
+          <Route path="revision" element={<RevisionManagementApp/>} />
+          <Route path="recibir" element={<RecibirSolicitud/>} />
           <Route path="*" element={<Error />} />
         </Route>
       </Routes>

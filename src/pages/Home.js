@@ -11,7 +11,7 @@ const Home = () => {
         <Col md={6} xs={12}>
           <Row className="mb-2 align-items-center justify-content-center">
             <Col>
-              <Button variant="primary" block>
+              <Button variant="primary" block="true">
                 <img src="https://pbs.twimg.com/media/Fjz1eSyWQAAQYwk.jpg:large" alt="Botón 1" className="mr-2" style={{maxWidth:"100%",height:"auto"}} />
                 VENTAS
               </Button>
@@ -19,7 +19,7 @@ const Home = () => {
           </Row>
           <Row className="align-items-center justify-content-center">
             <Col>
-              <Button variant="primary" block>
+              <Button variant="primary" block="true">
                 <img src="https://pbs.twimg.com/media/Fjz1eSyWQAAQYwk.jpg:large" alt="Botón 2" className="mr-2" style={{maxWidth:"100%",height:"auto"}} />
                 INVENTARIO
               </Button>
@@ -29,7 +29,7 @@ const Home = () => {
         <Col md={6} xs={12}>
           <Row className="mb-2 align-items-center justify-content-center">
             <Col>
-              <Button variant="primary" block>
+              <Button variant="primary" block="true">
                 <img src="https://pbs.twimg.com/media/Fjz1eSyWQAAQYwk.jpg:large" alt="Botón 3" className="mr-2" style={{maxWidth:"100%",height:"auto"}} />
                 Botón 3
               </Button>
@@ -37,7 +37,7 @@ const Home = () => {
           </Row>
           <Row className="align-items-center justify-content-center">
             <Col>
-              <Button variant="primary" block>
+              <Button variant="primary" block="true">
                 <img src="https://pbs.twimg.com/media/Fjz1eSyWQAAQYwk.jpg:large" alt="Botón 4" className="mr-2" style={{maxWidth:"100%",height:"auto"}} />
                 Botón 4
               </Button>

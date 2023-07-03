@@ -1,8 +1,16 @@
 import React from "react";
 import { Container, Row, Col, Form, Button } from "react-bootstrap";
+import { useNavigate } from "react-router-dom";
 import "../styles/Login.css";
 
 function Login() {
+
+  const navigate = useNavigate();
+
+  const handleLogin = () => {
+    // Redirige a la página de ventas
+    navigate("/ventas");
+  };
   return (
     <Container fluid className="login-container">
       <Row className="justify-content-center align-items-center">
