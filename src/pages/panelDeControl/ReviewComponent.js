@@ -1,17 +1,33 @@
-import React from 'react';
-import { Box, Container, Typography, Button, Modal } from '@mui/material';
+import React from "react";
+import { Box, Container, Typography, Button, Modal, Grid } from "@mui/material";
 
 // Componente del modal
-const CustomModal = ({ open, onClose, title, content }) => {
+const CustomModal = ({ open, onClose, title, fileUrl }) => {
   return (
     <Modal open={open} onClose={onClose}>
-      <Box sx={{ position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%)', width: 400, bgcolor: 'background.paper', boxShadow: 24, p: 4 }}>
+      <Box
+        sx={{
+          position: "absolute",
+          top: "50%",
+          left: "50%",
+          transform: "translate(-50%, -50%)",
+          width: 800, // Ajusta el ancho del modal según sea necesario
+          height: 600, // Ajusta la altura del modal según sea necesario
+          bgcolor: "background.paper",
+          boxShadow: 24,
+          p: 4,
+          display: "flex",
+          flexDirection: "column",
+          alignItems: "center",
+        }}
+      >
         <Typography variant="h6" component="h2" gutterBottom>
           {title}
         </Typography>
-        <Typography variant="body1" gutterBottom>
-          {content}
-        </Typography>
+        <embed src={fileUrl} width="100%" height="100%" type="application/pdf" />
+        <Button variant="outlined" href={fileUrl} target="_blank" download style={{ marginTop: '10px' }}>
+          Descargar PDF
+        </Button>
         <Button onClick={onClose}>Cerrar</Button>
       </Box>
     </Modal>
@@ -20,90 +36,98 @@ const CustomModal = ({ open, onClose, title, content }) => {
 
 // Componente principal
 const ReviewComponent = () => {
-  const [userModalOpen, setUserModalOpen] = React.useState(false);
-  const [salesModalOpen, setSalesModalOpen] = React.useState(false);
-  const [servicesModalOpen, setServicesModalOpen] = React.useState(false);
-  const [notificationsModalOpen, setNotificationsModalOpen] = React.useState(false);
+  const [modalOpen, setModalOpen] = React.useState(false);
+  const [modalTitle, setModalTitle] = React.useState("");
+  const [fileUrl, setFileUrl] = React.useState("");
 
-  const handleUserModalOpen = () => {
-    setUserModalOpen(true);
+  const handleModalOpen = (type, fileName) => {
+    const url = `http://localhost:8080/${fileName}`;
+    setFileUrl(url);
+    setModalTitle(`Reporte de ${type}`);
+    setModalOpen(true);
   };
 
-  const handleUserModalClose = () => {
-    setUserModalOpen(false);
-  };
-
-  const handleSalesModalOpen = () => {
-    setSalesModalOpen(true);
-  };
-
-  const handleSalesModalClose = () => {
-    setSalesModalOpen(false);
-  };
-
-  const handleServicesModalOpen = () => {
-    setServicesModalOpen(true);
-  };
-
-  const handleServicesModalClose = () => {
-    setServicesModalOpen(false);
-  };
-
-  const handleNotificationsModalOpen = () => {
-    setNotificationsModalOpen(true);
-  };
-
-  const handleNotificationsModalClose = () => {
-    setNotificationsModalOpen(false);
+  const handleModalClose = () => {
+    setModalOpen(false);
   };
 
   return (
     <Container maxWidth="sm">
-      <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', my: 4 }}>
+      <Box
+        sx={{
+          display: "flex",
+          flexDirection: "column",
+          alignItems: "center",
+          my: 4,
+        }}
+      >
         <Typography variant="h4" component="h1" gutterBottom>
-          Revisión de Inventario, Ventas y Servicios
+          Revisión de Datos
         </Typography>
-        <Button variant="contained" onClick={handleUserModalOpen} sx={{ mt: 2 }}>
-          Ver Inventario
-        </Button>
-        <Button variant="contained" onClick={handleSalesModalOpen} sx={{ mt: 2 }}>
-          Ver Ventas
-        </Button>
-        <Button variant="contained" onClick={handleServicesModalOpen} sx={{ mt: 2 }}>
-          Ver Servicios
-        </Button>
-        <Button variant="contained" onClick={handleNotificationsModalOpen} sx={{ mt: 2 }}>
-          Ver Notificaciones
-        </Button>
+        <Grid container spacing={2}>
+          <Grid item xs={6}>
+            <Button
+              variant="contained"
+              onClick={() => handleModalOpen("Usuarios", "UsuariosReport.pdf")}
+              sx={{ mt: 2, width: "100%" }}
+            >
+              Reporte Usuarios
+            </Button>
+          </Grid>
+          <Grid item xs={6}>
+            <Button
+              variant="contained"
+              onClick={() => handleModalOpen("Inventario", "InventarioReport.pdf")}
+              sx={{ mt: 2, width: "100%" }}
+            >
+              Reporte Inventario
+            </Button>
+          </Grid>
+          <Grid item xs={6}>
+            <Button
+              variant="contained"
+              onClick={() => handleModalOpen("Ventas", "VentasReport.pdf")}
+              sx={{ mt: 2, width: "100%" }}
+            >
+              Reporte Ventas
+            </Button>
+          </Grid>
+          <Grid item xs={6}>
+            <Button
+              variant="contained"
+              onClick={() => handleModalOpen("Productos", "ProductosReport.pdf")}
+              sx={{ mt: 2, width: "100%" }}
+            >
+              Reporte Productos
+            </Button>
+          </Grid>
+          <Grid item xs={6}>
+            <Button
+              variant="contained"
+              onClick={() => handleModalOpen("Servicios", "ServiciosReport.pdf")}
+              sx={{ mt: 2, width: "100%" }}
+            >
+              Reporte Servicios
+            </Button>
+          </Grid>
+          <Grid item xs={6}>
+            <Button
+              variant="contained"
+              onClick={() => handleModalOpen("Notificaciones", "NotificacionesReport.pdf")}
+              sx={{ mt: 2, width: "100%" }}
+            >
+              Reporte Notificaciones
+            </Button>
+          </Grid>
+        </Grid>
+
+        <CustomModal
+          open={modalOpen}
+          onClose={handleModalClose}
+          title={modalTitle}
+          fileUrl={fileUrl}
+        />
       </Box>
-
-      <CustomModal
-        open={userModalOpen}
-        onClose={handleUserModalClose}
-        title="Inventario"
-        content="Aqui se mostrara el inventario"
-      />
-
-      <CustomModal
-        open={salesModalOpen}
-        onClose={handleSalesModalClose}
-        title="Ventas"
-        content="Aquí se mostrarían las ventas realizadas."
-      />
-
-      <CustomModal
-        open={servicesModalOpen}
-        onClose={handleServicesModalClose}
-        title="Servicios"
-        content="Aquí se mostrarían los servicios disponibles."
-      />
-
-      <CustomModal
-        open={notificationsModalOpen}
-        onClose={handleNotificationsModalClose}
-        title="Notificaciones"
-        content="Aquí se mostrarían las notificaciones pendientes."
-      />
     </Container>
   );
 };
