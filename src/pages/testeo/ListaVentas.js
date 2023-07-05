@@ -112,7 +112,6 @@ const ListaVentas = () => {
 
   return (
     <Container
-      maxWidth="xl"
       sx={{
         backgroundColor: "#ffffff",
         padding: "20px",

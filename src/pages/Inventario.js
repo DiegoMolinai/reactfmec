@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Button, Modal, Form, Table, Pagination } from "react-bootstrap";
+import { Button, Modal, Form, Table, Pagination, Container } from "react-bootstrap";
 import { Add, Edit, Delete, Visibility } from "@mui/icons-material";
 
 const Inventario = () => {
@@ -134,8 +134,8 @@ const Inventario = () => {
   };
 
   return (
-    <div style={{ marginTop: "1vh" }}>
-      <div className="d-flex justify-content-between align-items-center">
+    <Container>
+<div className="d-flex justify-content-between align-items-center">
         <h2>Inventario</h2>
         <Button variant="primary" onClick={handleShowAdd}>
           <Add />
@@ -428,7 +428,7 @@ const Inventario = () => {
           </Button>
         </Modal.Footer>
       </Modal>
-    </div>
+    </Container>
   );
 };
 
