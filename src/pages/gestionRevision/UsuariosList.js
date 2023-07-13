@@ -1,5 +1,5 @@
 import React from "react";
-import { List, ListItem, ListItemText } from "@mui/material";
+import { List, ListItem, ListItemText, Typography } from "@mui/material";
 
 const UsuariosList = ({ usuarios, onUsuarioClick }) => {
   return (
@@ -7,11 +7,18 @@ const UsuariosList = ({ usuarios, onUsuarioClick }) => {
       {usuarios.map((usuario) => (
         <ListItem
           button
-          key={usuario.id}
-          onClick={() => onUsuarioClick(usuario.id)}
-          sx={{ backgroundColor: usuario.selected ? "#e0e0e0" : "inherit" }}
+          key={usuario._id}
+          onClick={() => onUsuarioClick(usuario._id)}
         >
-          <ListItemText primary={usuario.nombre} secondary={usuario.correo} />
+          <ListItemText
+            primary={usuario.nombre}
+            secondary={
+              <>
+                <Typography variant="subtitle1">Correo: {usuario.email}</Typography>
+                <Typography variant="subtitle1">Rol: {usuario.rol}</Typography>
+              </>
+            }
+          />
         </ListItem>
       ))}
     </List>

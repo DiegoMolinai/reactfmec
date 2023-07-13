@@ -1,14 +1,14 @@
 import React, { useState, useEffect } from 'react';
-import { Container, Typography, Grid } from '@mui/material';
+import { Container, Typography, Grid, Button } from '@mui/material';
 import ServiceList from './ServiceList';
 import ServiceForm from './ServiceForm';
 
 const ServiceManagementApp = () => {
   const [services, setServices] = useState([]);
   const [selectedService, setSelectedService] = useState(null);
+  const [isFormOpen, setIsFormOpen] = useState(false);
 
   useEffect(() => {
-    // Simular la obtención de servicios desde la API
     fetch('http://localhost:9000/api/servicios')
       .then((response) => response.json())
       .then((data) => setServices(data))
@@ -16,14 +16,11 @@ const ServiceManagementApp = () => {
   }, []);
 
   const handleAddService = (service) => {
-    // Aquí debes realizar la lógica para guardar el servicio en la base de datos
-    // y luego actualizar el estado con los servicios actualizados
     setServices([...services, service]);
+    setIsFormOpen(false);
   };
 
   const handleUpdateService = (updatedService) => {
-    // Aquí debes realizar la lógica para actualizar el servicio en la base de datos
-    // y luego actualizar el estado con los servicios actualizados
     const updatedServices = services.map((service) => {
       if (service.id === updatedService.id) {
         return updatedService;
@@ -31,47 +28,48 @@ const ServiceManagementApp = () => {
       return service;
     });
     setServices(updatedServices);
-    setSelectedService(null);
+    setIsFormOpen(false);
   };
 
   const handleDeleteService = (id) => {
-    // Aquí debes realizar la lógica para eliminar el servicio de la base de datos
-    // y luego actualizar el estado con los servicios actualizados
     const filteredServices = services.filter((service) => service.id !== id);
     setServices(filteredServices);
   };
 
   const handleEditService = (service) => {
     setSelectedService(service);
+    setIsFormOpen(true);
   };
 
-  const handleSelectService = (service) => {
-    // Lógica para manejar la selección del servicio
-    console.log("Servicio seleccionado:", service);
+  const handleOpenForm = () => {
+    setSelectedService(null);
+    setIsFormOpen(true);
   };
 
   return (
-    <Container maxWidth="md">
+    <Container maxWidth="md"style={{
+      backgroundColor: "#ffffff",
+      padding: "20px",
+      borderRadius: "4px",
+    }}>
       <Typography variant="h4" align="center" gutterBottom>
         Servicios
       </Typography>
-      <Grid container spacing={2} sx={{ backgroundColor: '#f5f5f5', padding: '20px', borderRadius: '5px' }}>
-        <Grid item xs={12}>
-          <ServiceForm
-            onAddService={handleAddService}
-            onUpdateService={handleUpdateService}
-            selectedService={selectedService}
-          />
-        </Grid>
-        <Grid item xs={12}>
-          <ServiceList
-            services={services}
-            onDeleteService={handleDeleteService}
-            onEditService={handleEditService}
-            onSelectService={handleSelectService}
-          />
-        </Grid>
-      </Grid>
+      <Button variant="contained" color="primary" onClick={handleOpenForm}>
+        Agregar Servicio
+      </Button>
+      <ServiceForm
+        isOpen={isFormOpen}
+        onClose={() => setIsFormOpen(false)}
+        onAddService={handleAddService}
+        onUpdateService={handleUpdateService}
+        selectedService={selectedService}
+      />
+      <ServiceList
+        services={services}
+        onDeleteService={handleDeleteService}
+        onEditService={handleEditService}
+      />
     </Container>
   );
 };

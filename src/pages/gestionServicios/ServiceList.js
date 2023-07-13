@@ -1,118 +1,57 @@
 import { useState, useEffect } from "react";
-import { Grid, List, ListItem, ListItemText, Modal, Backdrop, Fade, Typography } from "@mui/material";
+import { Grid, List, ListItem, ListItemText, ListItemSecondaryAction, IconButton, Modal, Backdrop, Fade, Typography } from "@mui/material";
+import EditIcon from "@mui/icons-material/Edit";
+import DeleteIcon from "@mui/icons-material/Delete";
 
-const ServiceList = () => {
-  const [services, setServices] = useState([]);
+const ServiceList = ({ services, onDeleteService, onEditService }) => {
   const [selectedService, setSelectedService] = useState(null);
-  const [selectedServiceProducts, setSelectedServiceProducts] = useState([]);
+  const [open, setOpen] = useState(false);
 
-  const fetchServices = async () => {
-    try {
-      const response = await fetch("http://localhost:9000/api/servicios");
-      const data = await response.json();
-      setServices(data);
-    } catch (error) {
-      console.error("Error fetching services:", error);
-    }
-  };
-
-  const fetchProducts = async () => {
-    try {
-      const response = await fetch("http://localhost:9000/api/productos");
-      const data = await response.json();
-
-      // Filtrar los productos utilizados por el servicio seleccionado
-      const productsUtilizados = data.filter((product) =>
-        selectedService.productos.includes(product._id)
-      );
-      setSelectedServiceProducts(productsUtilizados);
-    } catch (error) {
-      console.error("Error fetching products:", error);
-    }
-  };
-
-  const handleServiceClick = (service) => {
+  const handleOpen = (service) => {
     setSelectedService(service);
+    setOpen(true);
   };
 
-  const handleCloseModal = () => {
+  const handleClose = () => {
     setSelectedService(null);
-    setSelectedServiceProducts([]);
+    setOpen(false);
   };
-
-  useEffect(() => {
-    fetchServices();
-  }, []);
-
-  useEffect(() => {
-    if (selectedService) {
-      fetchProducts();
-    }
-  }, [selectedService]);
 
   return (
     <Grid container spacing={2}>
       <Grid item xs={12}>
         <List component="nav">
           {services.map((service) => (
-            <ListItem
-              key={service._id}
-              button
-              onClick={() => handleServiceClick(service)}
-            >
+            <ListItem key={service._id} button onClick={() => handleOpen(service)}>
               <ListItemText primary={service.name} />
+              <ListItemSecondaryAction>
+                <IconButton edge="end" aria-label="edit" onClick={() => onEditService(service)}>
+                  <EditIcon />
+                </IconButton>
+                <IconButton edge="end" aria-label="delete" onClick={() => onDeleteService(service._id)}>
+                  <DeleteIcon />
+                </IconButton>
+              </ListItemSecondaryAction>
             </ListItem>
           ))}
         </List>
       </Grid>
-
       <Modal
-        open={Boolean(selectedService)}
-        onClose={handleCloseModal}
+        open={open}
+        onClose={handleClose}
         closeAfterTransition
-        BackdropComponent={Backdrop}
-        BackdropProps={{
-          timeout: 500,
-        }}
       >
-        <Fade in={Boolean(selectedService)}>
-          <div
-            style={{
-              position: "absolute",
-              top: "50%",
-              left: "50%",
-              transform: "translate(-50%, -50%)",
-              width: 600,
-              maxWidth: "90%",
-              maxHeight: "90%",
-              overflow: "auto",
-              backgroundColor: "#fff",
-              boxShadow: "0 3px 5px rgba(0, 0, 0, 0.3)",
-              padding: "20px",
-            }}
-          >
+        <Fade in={open}>
+          <div style={{ backgroundColor: '#fff', padding: '1em', position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%)', minWidth: '300px' }}>
+            <Typography variant="h6">Detalle del Servicio</Typography>
             {selectedService && (
-              <div>
-                <Typography variant="h6" gutterBottom>
-                  {selectedService.name}
-                </Typography>
-                <Typography variant="subtitle1" gutterBottom>
-                  {selectedService.tipo}
-                </Typography>
-                <Typography variant="body1" gutterBottom>
-                  {selectedService.descripcion}
-                </Typography>
-                <Typography variant="h6" gutterBottom>
-                  Productos utilizados:
-                </Typography>
-                <List>
-                  {selectedServiceProducts.map((product) => (
-                    <ListItem key={product._id}>
-                      <ListItemText primary={product.nombre} />
-                    </ListItem>
-                  ))}
-                </List>
-              </div>
+              <>
+                <Typography variant="body1"><strong>Nombre:</strong> {selectedService.name}</Typography>
+                <Typography variant="body1"><strong>ID de Cambio:</strong> {selectedService.idCambio}</Typography>
+                <Typography variant="body1"><strong>Tipo:</strong> {selectedService.tipo}</Typography>
+                <Typography variant="body1"><strong>Descripción:</strong> {selectedService.descripcion}</Typography>
+                <Typography variant="body1"><strong>Productos:</strong> {selectedService.productos.join(', ')}</Typography>
+              </>
             )}
           </div>
         </Fade>

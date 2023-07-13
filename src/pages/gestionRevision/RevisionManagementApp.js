@@ -1,57 +1,76 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Grid, Typography, Box, Container } from "@mui/material";
 import UsuariosList from "./UsuariosList";
 import VentasList from "./VentasList";
 
 const RevisionManagementApp = () => {
-  const [usuarios] = useState([
-    { id: 1, nombre: "Juan Pérez", correo: "juan@example.com" },
-    { id: 2, nombre: "María Gómez", correo: "maria@example.com" },
-    { id: 3, nombre: "Pedro Rodríguez", correo: "pedro@example.com" },
-  ]);
+  const [usuarios, setUsuarios] = useState([]);
+  const [ventas, setVentas] = useState([]);
+  const [selectedUsuario, setSelectedUsuario] = useState(null);
 
-  const generateVentas = (userId) => {
-    const ventas = [];
-    for (let i = 1; i <= 10; i++) {
-      ventas.push({ id: i, tipo: "Presencial", precio: i * 100, usuarioId: userId });
+  useEffect(() => {
+    fetchUsuarios();
+    fetchVentas();
+  }, []);
+
+  const fetchUsuarios = async () => {
+    try {
+      const response = await fetch("http://localhost:9000/usuarios");
+      const data = await response.json();
+      setUsuarios(data);
+    } catch (error) {
+      console.log("Error al obtener los usuarios:", error.message);
     }
-    return ventas;
   };
 
-  const [ventas, setVentas] = useState(() => {
-    const allVentas = usuarios.reduce((acc, user) => {
-      const userVentas = generateVentas(user.id);
-      return [...acc, ...userVentas];
-    }, []);
-    return allVentas;
-  });
-
-  const [selectedUsuario, setSelectedUsuario] = useState(null);
+  const fetchVentas = async () => {
+    try {
+      const response = await fetch("http://localhost:9000/ventas");
+      const data = await response.json();
+      setVentas(data);
+    } catch (error) {
+      console.log("Error al obtener las ventas:", error.message);
+    }
+  };
 
   const handleUsuarioClick = (usuarioId) => {
     setSelectedUsuario(usuarioId);
   };
 
-  const handleVentaBorrar = (ventaId) => {
-    setVentas((prevVentas) => prevVentas.filter((venta) => venta.id !== ventaId));
+  const handleVentaBorrar = async (ventaId) => {
+    try {
+      await fetch(`http://localhost:9000/ventas/${ventaId}`, {
+        method: "DELETE",
+      });
+      fetchVentas();
+    } catch (error) {
+      console.log("Error al borrar la venta:", error.message);
+    }
   };
 
-  const filteredVentas = ventas.filter((venta) => venta.usuarioId === selectedUsuario);
+  // Filtrar las ventas del usuario seleccionado
+  const filteredVentas = ventas.filter((venta) =>
+    usuarios.some((usuario) => usuario.vendedor === venta.vendedor && usuario._id === selectedUsuario)
+  );
+
+  // Obtener el usuario seleccionado
+  const selectedUsuarioObj = usuarios.find((usuario) => usuario._id === selectedUsuario);
 
   return (
-    <Container maxWidth="md" sx={{ backgroundColor: "#ffffff", padding: "20px", borderRadius: "4px" }}>
+    <Container maxWidth="xl" sx={{ backgroundColor: "#ffffff", padding: "20px", borderRadius: "4px" }}>
       <Grid container spacing={2}>
         <Grid item xs={6}>
           <Typography variant="h5" gutterBottom>
             Gestión de Usuarios
           </Typography>
-          <UsuariosList usuarios={usuarios} onUsuarioClick={handleUsuarioClick} />
+          <UsuariosList usuarios={usuarios} onUsuarioClick={handleUsuarioClick} selectedUsuario={selectedUsuario} />
+
         </Grid>
         <Grid item xs={6}>
           <Typography variant="h5" gutterBottom>
             Ventas del Usuario
           </Typography>
-          {selectedUsuario ? (
+          {selectedUsuarioObj ? (
             <VentasList ventas={filteredVentas} onVentaBorrar={handleVentaBorrar} />
           ) : (
             <Box sx={{ mt: 2 }}>

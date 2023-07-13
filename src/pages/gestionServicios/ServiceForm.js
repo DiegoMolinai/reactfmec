@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
-import { TextField, Button, Grid, MenuItem } from "@mui/material";
+import { TextField, Button, Grid, MenuItem, Modal, Fade } from "@mui/material";
 
-const ServiceForm = ({ onAddService, onUpdateService, selectedService }) => {
+const ServiceForm = ({ isOpen, onClose, onAddService, onUpdateService, selectedService }) => {
   const [serviceName, setServiceName] = useState("");
   const [idCambio, setIdCambio] = useState("");
   const [tipo, setTipo] = useState("");
@@ -10,12 +10,21 @@ const ServiceForm = ({ onAddService, onUpdateService, selectedService }) => {
   const [selectedProductos, setSelectedProductos] = useState([]);
 
   useEffect(() => {
-    // Simular la obtención de productos desde la API
     fetch("http://localhost:9000/api/productos")
       .then((response) => response.json())
       .then((data) => setProductos(data))
       .catch((error) => console.error(error));
   }, []);
+
+  useEffect(() => {
+    if (selectedService) {
+      setServiceName(selectedService.name);
+      setIdCambio(selectedService.idCambio);
+      setTipo(selectedService.tipo);
+      setDescripcion(selectedService.descripcion);
+      setSelectedProductos(selectedService.productos);
+    }
+  }, [selectedService]);
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -40,83 +49,92 @@ const ServiceForm = ({ onAddService, onUpdateService, selectedService }) => {
     setTipo("");
     setDescripcion("");
     setSelectedProductos([]);
+    onClose();
   };
 
   return (
-    <form onSubmit={handleSubmit}>
-      <Grid container spacing={2}>
-        <Grid item xs={12} md={6}>
-          <TextField
-            label="Nombre del servicio"
-            value={serviceName}
-            onChange={(e) => setServiceName(e.target.value)}
-            fullWidth
-            required
-          />
-        </Grid>
-        <Grid item xs={12} md={6}>
-          <TextField
-            type="number"
-            label="ID de cambio"
-            value={idCambio}
-            onChange={(e) => setIdCambio(e.target.value)}
-            fullWidth
-            required
-          />
-        </Grid>
-        <Grid item xs={12} md={6}>
-          <TextField
-            label="Tipo"
-            value={tipo}
-            onChange={(e) => setTipo(e.target.value)}
-            fullWidth
-            required
-          />
-        </Grid>
-        <Grid item xs={12} md={6}>
-          <TextField
-            label="Descripción"
-            value={descripcion}
-            onChange={(e) => setDescripcion(e.target.value)}
-            fullWidth
-            required
-          />
-        </Grid>
-        <Grid item xs={12} md={6}>
-          <TextField
-            select
-            label="Productos"
-            value={selectedProductos}
-            onChange={(e) => setSelectedProductos(e.target.value)}
-            fullWidth
-            required
-            SelectProps={{
-              multiple: true,
-              renderValue: (selected) =>
-                selected
-                  .map((value) => {
-                    const selectedProduct = productos.find(
-                      (product) => product._id === value
-                    );
-                    return selectedProduct ? selectedProduct.nombre : "";
-                  })
-                  .join(", "),
-            }}
-          >
-            {productos.map((product) => (
-              <MenuItem key={product._id} value={product._id}>
-                {product.nombre}
-              </MenuItem>
-            ))}
-          </TextField>
-        </Grid>
-        <Grid item xs={12}>
-          <Button type="submit" variant="contained" color="primary">
-            {selectedService ? "Editar servicio" : "Guardar servicio"}
-          </Button>
-        </Grid>
-      </Grid>
-    </form>
+    <Modal open={isOpen} onClose={onClose}>
+      <Fade in={isOpen}>
+        <div
+          style={{
+            position: "absolute",
+            top: "50%",
+            left: "50%",
+            transform: "translate(-50%, -50%)",
+            width: 600,
+            maxWidth: "90%",
+            maxHeight: "90%",
+            overflow: "auto",
+            backgroundColor: "#fff",
+            boxShadow: "0 3px 5px rgba(0, 0, 0, 0.3)",
+            padding: "20px",
+          }}
+        >
+          <form onSubmit={handleSubmit}>
+            <TextField
+              variant="outlined"
+              margin="normal"
+              required
+              fullWidth
+              id="serviceName"
+              label="Nombre del servicio"
+              value={serviceName}
+              onChange={(e) => setServiceName(e.target.value)}
+            />
+            <TextField
+              variant="outlined"
+              margin="normal"
+              required
+              fullWidth
+              id="idCambio"
+              label="ID de cambio"
+              value={idCambio}
+              onChange={(e) => setIdCambio(e.target.value)}
+            />
+            <TextField
+              variant="outlined"
+              margin="normal"
+              required
+              fullWidth
+              id="tipo"
+              label="Tipo"
+              value={tipo}
+              onChange={(e) => setTipo(e.target.value)}
+            />
+            <TextField
+              variant="outlined"
+              margin="normal"
+              required
+              fullWidth
+              id="descripcion"
+              label="Descripción"
+              value={descripcion}
+              onChange={(e) => setDescripcion(e.target.value)}
+            />
+            <TextField
+              variant="outlined"
+              margin="normal"
+              required
+              select
+              fullWidth
+              id="productos"
+              label="Productos"
+              value={selectedProductos}
+              onChange={(e) => setSelectedProductos(e.target.value)}
+            >
+              {productos.map((option) => (
+                <MenuItem key={option.value} value={option.value}>
+                  {option.label}
+                </MenuItem>
+              ))}
+            </TextField>
+            <Button type="submit" variant="contained" color="primary">
+              {selectedService ? 'Actualizar' : 'Añadir'}
+            </Button>
+          </form>
+        </div>
+      </Fade>
+    </Modal>
   );
 };
 

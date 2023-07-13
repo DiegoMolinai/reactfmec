@@ -1,110 +1,428 @@
-import React, { useState } from "react";
-import { Typography, Box, Container, Modal, IconButton } from "@mui/material";
+import React, { useState, useEffect } from "react";
+import {
+  Typography,
+  Box,
+  Container,
+  Modal,
+  IconButton,
+  Button,
+  TextField,
+  MenuItem,
+  Alert,
+  Pagination,
+} from "@mui/material";
 import EditIcon from "@mui/icons-material/Edit";
 import VisibilityIcon from "@mui/icons-material/Visibility";
 import DeleteIcon from "@mui/icons-material/Delete";
+import CheckIcon from "@mui/icons-material/Check";
+import UndoIcon from "@mui/icons-material/Undo";
 
-const MantencionVehiculos = () => {
-  const [tareas, setTareas] = useState([]);
+const ManejoNotificaciones = () => {
+  const [notificaciones, setNotificaciones] = useState([]);
+  const [tareasTerminadas, setTareasTerminadas] = useState([]);
+  const [selectedNotificacion, setSelectedNotificacion] = useState(null);
+  const [openEditarModal, setOpenEditarModal] = useState(false);
+  const [openVisualizarModal, setOpenVisualizarModal] = useState(false);
+  const [editedTitulo, setEditedTitulo] = useState("");
+  const [editedDescripcion, setEditedDescripcion] = useState("");
+  const [showAlert, setShowAlert] = useState(false);
+  const [showMesonAlert, setShowMesonAlert] = useState(false);
+  const [currentPageNotificaciones, setCurrentPageNotificaciones] = useState(1);
+  const [currentPageTareasTerminadas, setCurrentPageTareasTerminadas] = useState(1);
+  const [itemsPerPage] = useState(10);
 
-  const [selectedTarea, setSelectedTarea] = useState(null);
-  const [openModal, setOpenModal] = useState(false);
-
-  const handleAgregarTarea = () => {
-    // Lógica para agregar una nueva tarea
-    const nuevaTarea = {
-      id: Date.now(),
-      nombre: generarNombreAleatorio(),
-    };
-    setTareas((prevTareas) => [...prevTareas, nuevaTarea]);
+  const fetchNotificaciones = async () => {
+    try {
+      const response = await fetch("http://localhost:9000/api/notificaciones");
+      if (response.status === 200) {
+        const data = await response.json();
+        const notificacionesTerminadas = data.filter(
+          (notificacion) => notificacion.terminada === true
+        );
+        setNotificaciones(data);
+        setTareasTerminadas(notificacionesTerminadas);
+      } else {
+        console.log("Error en la respuesta:", response.statusText);
+        setShowAlert(true);
+      }
+    } catch (error) {
+      console.log(error);
+      setShowAlert(true);
+    }
   };
 
-  const handleEditarTarea = (tareaId) => {
-    // Lógica para editar una tarea
-    const tarea = tareas.find((tarea) => tarea.id === tareaId);
-    setSelectedTarea(tarea);
-    setOpenModal(true);
+  const handleEditarNotificacion = (notificacion) => {
+    setSelectedNotificacion(notificacion);
+    setEditedTitulo(notificacion.titulo);
+    setEditedDescripcion(notificacion.descripcion);
+    setOpenEditarModal(true);
   };
 
-  const handleVerTarea = (tareaId) => {
-    // Lógica para ver una tarea
-    const tarea = tareas.find((tarea) => tarea.id === tareaId);
-    setSelectedTarea(tarea);
-    setOpenModal(true);
+  const handleGuardarCambios = async () => {
+    try {
+      const response = await fetch(
+        `http://localhost:9000/api/notificaciones/${selectedNotificacion._id}`,
+        {
+          method: "PATCH",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            titulo: editedTitulo,
+            descripcion: editedDescripcion,
+          }),
+        }
+      );
+      const data = await response.json();
+      setNotificaciones((prevNotificaciones) =>
+        prevNotificaciones.map((notificacion) =>
+          notificacion._id === data._id ? data : notificacion
+        )
+      );
+      handleCloseEditarModal();
+    } catch (error) {
+      console.log(error);
+      setShowAlert(true);
+    }
   };
 
-  const handleEliminarTarea = (tareaId) => {
-    // Lógica para eliminar una tarea
-    setTareas((prevTareas) => prevTareas.filter((tarea) => tarea.id !== tareaId));
+  const handleEliminarNotificacion = async (notificacion) => {
+    try {
+      await fetch(
+        `http://localhost:9000/api/notificaciones/${notificacion._id}`,
+        {
+          method: "DELETE",
+        }
+      );
+      setNotificaciones((prevNotificaciones) =>
+        prevNotificaciones.filter(
+          (notificacionItem) => notificacionItem._id !== notificacion._id
+        )
+      );
+    } catch (error) {
+      console.log(error);
+      setShowAlert(true);
+    }
   };
 
-  const generarNombreAleatorio = () => {
-    // Array de nombres de ejemplo
-    const nombres = [
-      "Cambio de aceite",
-      "Revisión de frenos",
-      "Cambio de neumáticos",
-      "Alineación y balanceo",
-      "Cambio de filtro de aire",
-    ];
-
-    // Generar un nombre aleatorio
-    const indiceAleatorio = Math.floor(Math.random() * nombres.length);
-    return nombres[indiceAleatorio];
+  const handleEnviarAlertaMeson = () => {
+    setShowMesonAlert(true);
+    alert("Se ha generado una alerta al mesón.");
   };
 
-  const handleCloseModal = () => {
-    setOpenModal(false);
+  const handleCloseEditarModal = () => {
+    setOpenEditarModal(false);
+    setSelectedNotificacion(null);
+    setEditedTitulo("");
+    setEditedDescripcion("");
   };
 
-  return (
-    <Container maxWidth="md" sx={{ backgroundColor: "#ffffff", padding: "20px", borderRadius: "4px" }}>
+  const handleMarcarComoTerminada = async (notificacion) => {
+    try {
+      await fetch(
+        `http://localhost:9000/api/notificaciones/${notificacion._id}/marcar-como-terminada`,
+        {
+          method: "PATCH",
+        }
+      );
+      setNotificaciones((prevNotificaciones) =>
+        prevNotificaciones.map((notificacionItem) =>
+          notificacionItem._id === notificacion._id
+            ? { ...notificacionItem, terminada: true }
+            : notificacionItem
+        )
+      );
+      setTareasTerminadas((prevTareasTerminadas) => [
+        ...prevTareasTerminadas,
+        notificacion,
+      ]);
+    } catch (error) {
+      console.log(error);
+      setShowAlert(true);
+    }
+  };
+
+  const handleMarcarComoNoTerminada = async(notificacion) => {
+  try {
+    await fetch(
+      `http://localhost:9000/api/notificaciones/${notificacion._id}/marcar-como-no-terminada`,
+      {
+        method: "PATCH",
+      }
+    );
+    setNotificaciones((prevNotificaciones) =>
+      prevNotificaciones.map((notificacionItem) =>
+        notificacionItem._id === notificacion._id
+          ? { ...notificacionItem, terminada: false }
+          : notificacionItem
+      )
+    );
+    setTareasTerminadas((prevTareasTerminadas) =>
+      prevTareasTerminadas.filter((tarea) => tarea._id !== notificacion._id)
+    );
+  } catch (error) {
+    console.log(error);
+    setShowAlert(true);
+  }
+};
+
+const handleVerNotificacion = (notificacion) => {
+  setSelectedNotificacion(notificacion);
+  setOpenVisualizarModal(true);
+};
+
+const handleCloseVisualizarModal = () => {
+  setOpenVisualizarModal(false);
+};
+
+const handlePageChangeNotificaciones = (event, value) => {
+  setCurrentPageNotificaciones(value);
+};
+
+const handlePageChangeTareasTerminadas = (event, value) => {
+  setCurrentPageTareasTerminadas(value);
+};
+
+useEffect(() => {
+  fetchNotificaciones();
+}, []);
+
+const indexOfLastItemNotificaciones = currentPageNotificaciones * itemsPerPage;
+const indexOfFirstItemNotificaciones = indexOfLastItemNotificaciones - itemsPerPage;
+const currentNotificaciones = notificaciones
+  .filter((notificacion) => !notificacion.terminada)
+  .slice(indexOfFirstItemNotificaciones, indexOfLastItemNotificaciones);
+
+const indexOfLastItemTareasTerminadas = currentPageTareasTerminadas * itemsPerPage;
+const indexOfFirstItemTareasTerminadas = indexOfLastItemTareasTerminadas - itemsPerPage;
+const currentTareasTerminadas = tareasTerminadas.slice(
+  indexOfFirstItemTareasTerminadas,
+  indexOfLastItemTareasTerminadas
+);
+
+return (
+  <Container
+    maxWidth="xl"
+    style={{
+      backgroundColor: "#ffffff",
+      padding: "20px",
+      borderRadius: "4px",
+    }}
+  >
+    <Box
+      style={{
+        marginBottom: "20px",
+      }}
+    >
       <Typography variant="h5" gutterBottom>
         Mantención de Vehículos
       </Typography>
-      <Box sx={{ display: "flex", flexDirection: "column" }}>
-        {tareas.length > 0 ? (
-          tareas.map((tarea) => (
-            <div key={tarea.id} style={{ marginBottom: "10px", display: "flex", alignItems: "center" }}>
-              <Typography variant="body1" sx={{ flex: 1 }}>
-                {tarea.nombre}
-              </Typography>
-              <IconButton onClick={() => handleEditarTarea(tarea.id)}>
-                <EditIcon />
-              </IconButton>
-              <IconButton onClick={() => handleVerTarea(tarea.id)}>
-                <VisibilityIcon />
-              </IconButton>
-              <IconButton onClick={() => handleEliminarTarea(tarea.id)}>
-                <DeleteIcon />
-              </IconButton>
-            </div>
-          ))
-        ) : (
-          <Typography variant="body1" color="textSecondary">
-            No hay tareas disponibles.
-          </Typography>
-        )}
-      </Box>
-      <Box sx={{ display: "flex", justifyContent: "center", marginTop: "20px" }}>
-        <button onClick={handleAgregarTarea}>Agregar Tarea</button>
+<Button
+  variant="contained"
+  onClick={handleEnviarAlertaMeson}
+  style={{ textTransform: "none", marginBottom: "20px" }}
+>
+  Enviar Alerta
+</Button>
+    </Box>
+
+    <Box
+      style={{
+        display: "flex",
+        flexDirection: "column",
+      }}
+    >
+      <Box
+        style={{
+          display: "flex",
+          flexDirection: "column",
+          gap: "20px",
+          marginBottom: "20px",
+        }}
+      >
+        <Typography variant="h6" gutterBottom>
+          Tareas sin terminar
+        </Typography>
+        <div>
+          <div style={{ overflowX: "auto" }}>
+            <table style={{ width: "100%" }}>
+              <thead>
+                <tr>
+                  <th>Título</th>
+                  <th>Descripción</th>
+                  <th>Fecha</th>
+                  <th>Acciones</th>
+                </tr>
+              </thead>
+              <tbody>
+                {currentNotificaciones.length > 0 ? (
+                  currentNotificaciones.map((notificacion) => (
+                    <tr key={notificacion._id}>
+                      <td>{notificacion.titulo}</td>
+                      <td>{notificacion.descripcion}</td>
+                      <td>{new Date(notificacion.fechaCreacion).toLocaleDateString("es-ES")}</td>
+                      <td>
+                        {!notificacion.terminada && (
+                          <>
+                            <IconButton onClick={() => handleEditarNotificacion(notificacion)}><EditIcon /></IconButton>
+                            <IconButton onClick={() => handleVerNotificacion(notificacion)}><VisibilityIcon /></IconButton>
+                            <IconButton onClick={() => handleEliminarNotificacion(notificacion)}><DeleteIcon /></IconButton>
+                            <Button variant="contained" color="success" startIcon={<CheckIcon />} onClick={() => handleMarcarComoTerminada(notificacion)} style={{ textTransform: "none" }}>Marcar como terminada</Button>
+                          </>
+                        )}
+                      </td>
+                    </tr>
+                  ))
+                ) : (
+                  <tr>
+                    <td colSpan={4} style={{ textAlign: "center" }}>No hay notificaciones disponibles.</td>
+                  </tr>
+                )}
+              </tbody>
+            </table>
+          </div>
+          <Pagination
+            count={Math.ceil(notificaciones.length / itemsPerPage)}
+            page={currentPageNotificaciones}
+            onChange={handlePageChangeNotificaciones}
+            style={{ marginTop: "10px" }}
+          />
+        </div>
       </Box>
 
-      <Modal open={openModal} onClose={handleCloseModal}>
-        <div style={{ backgroundColor: "#ffffff", padding: "20px", borderRadius: "4px" }}>
-          <Typography variant="h6" gutterBottom>
-            Detalles de la Tarea
-          </Typography>
-          {selectedTarea && (
-            <Typography variant="body1" gutterBottom>
-              Nombre: {selectedTarea.nombre}
-            </Typography>
-          )}
-          {/* Aquí puedes agregar más detalles de la tarea */}
+      <Box
+        style={{
+          display: "flex",
+          flexDirection: "column",
+          gap: "20px",
+        }}
+      >
+        <Typography variant="h6" gutterBottom>
+          Tareas terminadas
+        </Typography>
+        <div>
+          <div style={{ overflowX: "auto" }}>
+            <table style={{ width: "100%" }}>
+              <thead>
+                <tr>
+                  <th>Título</th>
+                  <th>Descripción</th>
+                  <th>Fecha</th>
+                  <th>Acciones</th>
+                </tr>
+              </thead>
+              <tbody>
+                {currentTareasTerminadas.length > 0 ? (
+                  currentTareasTerminadas.map((notificacion) => (
+                    <tr key={notificacion._id}>
+                      <td>{notificacion.titulo}</td>
+                      <td>{notificacion.descripcion}</td>
+                      <td>{new Date(notificacion.fechaCreacion).toLocaleDateString("es-ES")}</td>
+                      <td>
+                        <Button variant="contained" startIcon={<UndoIcon />} onClick={() => handleMarcarComoNoTerminada(notificacion)} style={{ textTransform: "none" }}>Marcar como no terminada</Button>
+                      </td>
+                    </tr>
+                  ))
+                ) : (
+                  <tr>
+                    <td colSpan={4} style={{ textAlign: "center" }}>No hay tareas terminadas.</td>
+                  </tr>
+                )}
+              </tbody>
+            </table>
+          </div>
+          <Pagination
+            count={Math.ceil(tareasTerminadas.length / itemsPerPage)}
+            page={currentPageTareasTerminadas}
+            onChange={handlePageChangeTareasTerminadas}
+            style={{ marginTop: "10px" }}
+          />
         </div>
-      </Modal>
-    </Container>
-  );
+      </Box>
+    </Box>
+
+    <Modal
+      open={openEditarModal}
+      onClose={handleCloseEditarModal}
+      style={{
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+      }}
+    >
+      <div
+        style={{
+          backgroundColor: "#ffffff",
+          padding: "20px",
+          borderRadius: "4px",
+        }}
+      >
+        <Typography variant="h6" gutterBottom>
+          Editar Notificación
+        </Typography>
+        {selectedNotificacion && (
+          <React.Fragment>
+            <TextField
+              label="Título"
+              value={editedTitulo}
+              onChange={(e) => setEditedTitulo(e.target.value)}
+              fullWidth
+              style={{ marginBottom: "10px" }}
+            />
+            <TextField
+              label="Descripción"
+              value={editedDescripcion}
+              onChange={(e) => setEditedDescripcion(e.target.value)}
+              fullWidth
+              style={{ marginBottom: "10px" }}
+            />
+            <Button
+              variant="contained"
+              onClick={handleGuardarCambios}
+              style={{ textTransform: "none" }}
+            >
+              Guardar Cambios
+            </Button>
+          </React.Fragment>
+        )}
+      </div>
+    </Modal>
+
+    <Modal
+      open={openVisualizarModal}
+      onClose={handleCloseVisualizarModal}
+      style={{
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+      }}
+    >
+      <div
+        style={{
+          backgroundColor: "#ffffff",
+          padding: "20px",
+          borderRadius: "4px",
+          width: "400px", // Ajusta el ancho según tus necesidades
+        }}
+      >
+        <Typography variant="h6" gutterBottom>
+          Detalles de la Notificación
+        </Typography>
+        {selectedNotificacion && (
+          <React.Fragment>
+            <Typography variant="body1" gutterBottom>
+              Título: {selectedNotificacion.titulo}
+            </Typography>
+            <Typography variant="body1" gutterBottom>
+              Descripción: {selectedNotificacion.descripcion}
+            </Typography>
+          </React.Fragment>
+        )}
+      </div>
+    </Modal>
+  </Container>
+);
+
 };
 
-export default MantencionVehiculos;
+export default ManejoNotificaciones;

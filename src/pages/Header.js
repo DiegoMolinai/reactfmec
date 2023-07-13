@@ -14,11 +14,11 @@ const Header = () => {
           <Nav.Link href="/Inventario"><h2>Inventario</h2></Nav.Link>
           <Nav.Link href="/Reportes"><h2>Reportes</h2></Nav.Link>
           <Nav.Link href="/Login"><h2>Login</h2></Nav.Link>
-          <Nav.Link href="/Lista"><h2>Lista</h2></Nav.Link>
           <Nav.Link href="/Admin"><h2>Admin</h2></Nav.Link>
           <Nav.Link href="/Servicios"><h2>Servicios</h2></Nav.Link>
           <Nav.Link href="/Revision"><h2>Revision</h2></Nav.Link>
           <Nav.Link href="/Recibir"><h2>Recibir Solicitud</h2></Nav.Link>
+          <Nav.Link href="/Notificaciones"><h2>Notificaciones</h2></Nav.Link>
         </Nav>
       </Navbar.Collapse>
     </Navbar>

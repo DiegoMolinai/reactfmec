@@ -1,5 +1,12 @@
 import React, { useState, useEffect } from "react";
-import { Button, Modal, Form, Table, Pagination, Container } from "react-bootstrap";
+import {
+  Button,
+  Modal,
+  Form,
+  Table,
+  Pagination,
+  Container,
+} from "react-bootstrap";
 import { Add, Edit, Delete, Visibility } from "@mui/icons-material";
 
 const Inventario = () => {
@@ -134,8 +141,15 @@ const Inventario = () => {
   };
 
   return (
-    <Container>
-<div className="d-flex justify-content-between align-items-center">
+    <Container
+      maxWidth="xl"
+      style={{
+        backgroundColor: "#ffffff",
+        padding: "20px",
+        borderRadius: "4px",
+      }}
+    >
+      <div className="d-flex justify-content-between align-items-center">
         <h2>Inventario</h2>
         <Button variant="primary" onClick={handleShowAdd}>
           <Add />
@@ -144,34 +158,18 @@ const Inventario = () => {
       </div>
       <Table striped bordered hover style={{ marginTop: "10px" }}>
         <thead>
-          <tr style={{ backgroundColor: "#ffe6e6", fontWeight: "bold" }}>
-            <th>
-              ID
-            </th>
-            <th>
-              Nombre Producto
-            </th>
-            <th>
-              Precio
-            </th>
-            <th>
-              Tipo
-            </th>
-            <th>
-              Fecha
-            </th>
-            <th>
-              Cantidad
-            </th>
-            <th>
-              Categoría
-            </th>
-            <th>
-              Acciones
-            </th>
+          <tr style={{ backgroundColor: "#ffe6e6",fontSize:"1.2rem", fontWeight: "bold" }}>
+            <th>ID</th>
+            <th>Nombre Producto</th>
+            <th>Precio</th>
+            <th>Tipo</th>
+            <th>Fecha</th>
+            <th>Cantidad</th>
+            <th>Categoría</th>
+            <th>Acciones</th>
           </tr>
         </thead>
-        <tbody>
+        <tbody style={{fontWeight:"bold"}}>
           {visibleItems.map((item, index) => (
             <tr
               key={index}

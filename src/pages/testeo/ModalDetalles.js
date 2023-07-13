@@ -1,7 +1,7 @@
 import React from 'react';
 import { Box, Typography, Button, Modal } from '@mui/material';
 
-const ModalDetalles = ({ open, onClose, notification }) => {
+const ModalDetalles = ({ open, onClose, venta }) => {
   return (
     <Modal open={open} onClose={onClose}>
       <Box
@@ -18,14 +18,13 @@ const ModalDetalles = ({ open, onClose, notification }) => {
           overflow: 'auto',
         }}
       >
-        {notification ? (
+        {venta ? (
           <div>
-            <Typography variant="h4">
-              Detalles de la notificación
-            </Typography>
-            <Typography variant="h5">Título: {notification.titulo}</Typography>
-            <Typography variant="h5">Descripción: {notification.descripcion}</Typography>
-            <Typography variant="h5">Fecha: {notification.fecha}</Typography>
+            <Typography variant="h4">Detalles de la venta</Typography>
+            <Typography variant="h5">ID Ventas: {venta.idVentas}</Typography>
+            <Typography variant="h5">Fecha de Creación: {new Date(venta.fechaCreacion).toLocaleDateString('es-ES')}</Typography>
+            <Typography variant="h5">Esta Terminada: {venta.estaTerminada ? 'Si' : 'No'}</Typography>
+            <Typography variant="h5">Esta Pagada: {venta.estaPagada ? 'Si' : 'No'}</Typography>
           </div>
         ) : null}
         <Button onClick={onClose}>Cerrar</Button>

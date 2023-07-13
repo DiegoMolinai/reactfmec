@@ -16,7 +16,6 @@ import ServiceManagementApp from "./pages/gestionServicios/ServiceManagementApp"
 import VentasManagementApp from "./pages/gestionVentas/VentasManagementApp";
 import RevisionManagementApp from "./pages/gestionRevision/RevisionManagementApp";
 import RecibirSolicitud from "./pages/recibirSolicitud/RecibirSolicitud";
-import Notificaciones from "./pages/barraLateralNavegador/Notificaciones";
 import ManejoNotificaciones from "./pages/manejarNotificaciones/ManejoNotificaciones";
 import ListaVentas from "./pages/testeo/ListaVentas";
 
@@ -25,16 +24,16 @@ function App() {
     <BrowserRouter>
       <Routes>
         <Route path="/" element={<AppLayout />}>
-          <Route index element={<Home />} />
+          <Route index element={<SignIn />} />
           <Route path="ventas" element={<ListaVentas />} />
           <Route path="login" element={<SignIn />} />
-          <Route path="lista" element={<Lista />} />
           <Route path="admin" element={<ManejoNotificaciones />} />
           <Route path="inventario" element={<Inventario />} />
           <Route path="reportes" element ={<ReviewComponent />}/>
           <Route path="servicios" element={<ServiceManagementApp />} />
           <Route path="revision" element={<RevisionManagementApp/>} />
           <Route path="recibir" element={<RecibirSolicitud/>} />
+          <Route path="notificaciones" element={<ManejoNotificaciones/>}/>
           <Route path="*" element={<Error />} />
         </Route>
       </Routes>

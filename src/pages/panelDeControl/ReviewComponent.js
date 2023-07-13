@@ -24,8 +24,19 @@ const CustomModal = ({ open, onClose, title, fileUrl }) => {
         <Typography variant="h6" component="h2" gutterBottom>
           {title}
         </Typography>
-        <embed src={fileUrl} width="100%" height="100%" type="application/pdf" />
-        <Button variant="outlined" href={fileUrl} target="_blank" download style={{ marginTop: '10px' }}>
+        <embed
+          src={fileUrl}
+          width="100%"
+          height="100%"
+          type="application/pdf"
+        />
+        <Button
+          variant="outlined"
+          href={fileUrl}
+          target="_blank"
+          download
+          style={{ marginTop: "10px" }}
+        >
           Descargar PDF
         </Button>
         <Button onClick={onClose}>Cerrar</Button>
@@ -52,82 +63,95 @@ const ReviewComponent = () => {
   };
 
   return (
-    <Container maxWidth="sm">
+    <Container
+      maxWidth="xl"
+      style={{
+        backgroundColor: "#ffffff",
+        padding: "20px",
+        borderRadius: "4px",
+      }}
+    >
       <Box
-        sx={{
-          display: "flex",
-          flexDirection: "column",
-          alignItems: "center",
-          my: 4,
-        }}
-      >
-        <Typography variant="h4" component="h1" gutterBottom>
-          Revisión de Datos
-        </Typography>
-        <Grid container spacing={2}>
-          <Grid item xs={6}>
-            <Button
-              variant="contained"
-              onClick={() => handleModalOpen("Usuarios", "UsuariosReport.pdf")}
-              sx={{ mt: 2, width: "100%" }}
-            >
-              Reporte Usuarios
-            </Button>
-          </Grid>
-          <Grid item xs={6}>
-            <Button
-              variant="contained"
-              onClick={() => handleModalOpen("Inventario", "InventarioReport.pdf")}
-              sx={{ mt: 2, width: "100%" }}
-            >
-              Reporte Inventario
-            </Button>
-          </Grid>
-          <Grid item xs={6}>
-            <Button
-              variant="contained"
-              onClick={() => handleModalOpen("Ventas", "VentasReport.pdf")}
-              sx={{ mt: 2, width: "100%" }}
-            >
-              Reporte Ventas
-            </Button>
-          </Grid>
-          <Grid item xs={6}>
-            <Button
-              variant="contained"
-              onClick={() => handleModalOpen("Productos", "ProductosReport.pdf")}
-              sx={{ mt: 2, width: "100%" }}
-            >
-              Reporte Productos
-            </Button>
-          </Grid>
-          <Grid item xs={6}>
-            <Button
-              variant="contained"
-              onClick={() => handleModalOpen("Servicios", "ServiciosReport.pdf")}
-              sx={{ mt: 2, width: "100%" }}
-            >
-              Reporte Servicios
-            </Button>
-          </Grid>
-          <Grid item xs={6}>
-            <Button
-              variant="contained"
-              onClick={() => handleModalOpen("Notificaciones", "NotificacionesReport.pdf")}
-              sx={{ mt: 2, width: "100%" }}
-            >
-              Reporte Notificaciones
-            </Button>
-          </Grid>
-        </Grid>
+  sx={{
+    display: "flex",
+    flexDirection: "column",
+    alignItems: "center",
+    my: 2,
+  }}
+>
+  <Typography variant="h4" component="h1" gutterBottom>
+    Revisión de Datos
+  </Typography>
+  <div style={{ width: "100%" }}>
+    <Button
+      variant="contained"
+      onClick={() => handleModalOpen("Usuarios", "UsuariosReport.pdf")}
+      sx={{ mt: 2, width: "100%", fontSize: "3rem" }}
+      style={{border:"5px solid black"}}
+    >
+      Reporte Usuarios
+    </Button>
+  </div>
+  <div style={{ width: "100%" }}>
+    <Button
+      variant="contained"
+      onClick={() => handleModalOpen("Inventario", "InventarioReport.pdf")}
+      sx={{ mt: 2, width: "100%", fontSize: "3rem" }}
+      style={{border:"5px solid black"}}
+    >
+      Reporte Inventario
+    </Button>
+  </div>
+  <div style={{ width: "100%" }}>
+    <Button
+      variant="contained"
+      onClick={() => handleModalOpen("Ventas", "VentasReport.pdf")}
+      sx={{ mt: 2, width: "100%", fontSize: "3rem" }}
+      style={{border:"5px solid black"}}
+    >
+      Reporte Ventas
+    </Button>
+  </div>
+  <div style={{ width: "100%" }}>
+    <Button
+      variant="contained"
+      onClick={() => handleModalOpen("Productos", "ProductosReport.pdf")}
+      sx={{ mt: 2, width: "100%", fontSize: "3rem" }}
+      style={{border:"5px solid black"}}
+    >
+      Reporte Productos
+    </Button>
+  </div>
+  <div style={{ width: "100%" }}>
+    <Button
+      variant="contained"
+      onClick={() => handleModalOpen("Servicios", "ServiciosReport.pdf")}
+      sx={{ mt: 2, width: "100%", fontSize: "3rem" }}
+      style={{border:"5px solid black"}}
+    >
+      Reporte Servicios
+    </Button>
+  </div>
+  <div style={{ width: "100%" }}>
+    <Button
+      variant="contained"
+      onClick={() =>
+        handleModalOpen("Notificaciones", "NotificacionesReport.pdf")
+      }
+      sx={{ mt: 2, width: "100%", fontSize: "3rem" }}
+      style={{border:"5px solid black"}}
+    >
+      Reporte Notificaciones
+    </Button>
+  </div>
+  <CustomModal
+    open={modalOpen}
+    onClose={handleModalClose}
+    title={modalTitle}
+    fileUrl={fileUrl}
+  />
+</Box>
 
-        <CustomModal
-          open={modalOpen}
-          onClose={handleModalClose}
-          title={modalTitle}
-          fileUrl={fileUrl}
-        />
-      </Box>
     </Container>
   );
 };
