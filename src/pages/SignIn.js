@@ -65,7 +65,7 @@ export default function SignIn() {
             required
             fullWidth
             id="email"
-            label="Correo Electrónico"
+            label="Usuario"
             name="email"
             autoComplete="email"
             autoFocus
@@ -80,10 +80,6 @@ export default function SignIn() {
             id="password"
             autoComplete="current-password"
           />
-          <FormControlLabel
-            control={<Checkbox value="remember" color="primary" />}
-            label="Recuerdame"
-          />
           <Button
             type="submit"
             fullWidth
@@ -92,21 +88,9 @@ export default function SignIn() {
           >
             Iniciar Sesión
           </Button>
-          <Grid container>
-            <Grid item xs>
-              <Link href="#" variant="body2">
-                Olvidaste tu contraseña?
-              </Link>
-            </Grid>
-            <Grid item>
-              <Link href="#" variant="body2">
-                {"No tienes una cuenta? Crea una!"}
-              </Link>
-            </Grid>
-          </Grid>
         </Box>
       </Box>
-      <Copyright sx={{ mt: 8, mb: 4 }} />
+      <Copyright sx={{ mb: 4 }} />
     </Container>
   );
 }

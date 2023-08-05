@@ -156,63 +156,79 @@ const Inventario = () => {
           Agregar Producto
         </Button>
       </div>
-      <Table striped bordered hover style={{ marginTop: "10px" }}>
-        <thead>
-          <tr style={{ backgroundColor: "#ffe6e6",fontSize:"1.2rem", fontWeight: "bold" }}>
-            <th>ID</th>
-            <th>Nombre Producto</th>
-            <th>Precio</th>
-            <th>Tipo</th>
-            <th>Fecha</th>
-            <th>Cantidad</th>
-            <th>Categoría</th>
-            <th>Acciones</th>
-          </tr>
-        </thead>
-        <tbody style={{fontWeight:"bold"}}>
-          {visibleItems.map((item, index) => (
+      <div className="table-responsive">
+        <Table striped bordered hover style={{ marginTop: "10px" }}>
+          <thead>
             <tr
-              key={index}
-              style={{ backgroundColor: "rgba(220, 220, 220, 0.5)" }}
+              style={{
+                backgroundColor: "#ffe6e6",
+                fontSize: "1.2rem",
+                fontWeight: "bold",
+              }}
             >
-              <td>{index + 1}</td>
-              <td>{item.nombre}</td>
-              <td>
-                {item.precio.toLocaleString("es-CL", {
-                  style: "currency",
-                  currency: "CLP",
-                })}
-              </td>
-              <td>{item.tipo}</td>
-              <td>{item.fecha}</td>
-              <td>{item.cantidad}</td>
-              <td>{item.categoria}</td>
-              <td>
-                <Button
-                  variant="outline-primary"
-                  className="mr-2"
-                  onClick={() => handleView(item)}
-                >
-                  <Visibility />
-                </Button>
-                <Button
-                  variant="outline-success"
-                  className="mr-2"
-                  onClick={() => handleEdit(item)}
-                >
-                  <Edit />
-                </Button>
-                <Button
-                  variant="outline-danger"
-                  onClick={() => handleDelete(item)}
-                >
-                  <Delete />
-                </Button>
-              </td>
+              <th>ID</th>
+              <th>Nombre Producto</th>
+              <th>Precio</th>
+              <th>Tipo</th>
+              <th>Fecha</th>
+              <th>Cantidad</th>
+              <th>Categoría</th>
+              <th>Acciones</th>
             </tr>
-          ))}
-        </tbody>
-      </Table>
+          </thead>
+          <tbody style={{ fontWeight: "bold" }}>
+            {visibleItems.map((item, index) => (
+              <tr
+                key={index}
+                style={{ backgroundColor: "rgba(220, 220, 220, 0.5)" }}
+              >
+                <td>{index + 1}</td>
+                <td>{item.nombre}</td>
+                <td>
+                  {item.precio.toLocaleString("es-CL", {
+                    style: "currency",
+                    currency: "CLP",
+                  })}
+                </td>
+                <td>{item.tipo}</td>
+                <td>
+                  {new Date(item.fecha).toLocaleDateString("es-ES", {
+                    year: "numeric",
+                    month: "long",
+                    day: "numeric",
+                  })}
+                </td>
+
+                <td>{item.cantidad}</td>
+                <td>{item.categoria}</td>
+                <td>
+                  <Button
+                    variant="outline-primary"
+                    className="mr-2"
+                    onClick={() => handleView(item)}
+                  >
+                    <Visibility />
+                  </Button>
+                  <Button
+                    variant="outline-success"
+                    className="mr-2"
+                    onClick={() => handleEdit(item)}
+                  >
+                    <Edit />
+                  </Button>
+                  <Button
+                    variant="outline-danger"
+                    onClick={() => handleDelete(item)}
+                  >
+                    <Delete />
+                  </Button>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </Table>
+      </div>
+
       <Pagination>
         {[...Array(Math.ceil(allItems.length / itemsPerPage))].map((_, i) => (
           <Pagination.Item

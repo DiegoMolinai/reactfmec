@@ -17,6 +17,8 @@ import {
   TableRow,
   TableCell,
   Paper,
+  Checkbox,
+  FormControlLabel,
 } from '@mui/material';
 
 const ModalEditarVenta = ({ open, onClose, venta, fetchVentas }) => {
@@ -59,35 +61,36 @@ const ModalEditarVenta = ({ open, onClose, venta, fetchVentas }) => {
 
   const handleAgregarProducto = () => {
     const producto = productosDisponibles.find(
-      (prod) => prod.id === productoSeleccionado
+      (prod) => prod._id === productoSeleccionado
     );
     if (producto) {
       setProductosVenta([...productosVenta, producto]);
     }
   };
-
+  
   const handleQuitarProducto = (productoId) => {
     const nuevosProductos = productosVenta.filter(
-      (prod) => prod.id !== productoId
+      (prod) => prod._id !== productoId
     );
     setProductosVenta(nuevosProductos);
   };
-
+  
   const handleAgregarServicio = () => {
     const servicio = serviciosDisponibles.find(
-      (serv) => serv.id === servicioSeleccionado
+      (serv) => serv._id === servicioSeleccionado
     );
     if (servicio) {
       setServiciosVenta([...serviciosVenta, servicio]);
     }
   };
-
+  
   const handleQuitarServicio = (servicioId) => {
     const nuevosServicios = serviciosVenta.filter(
-      (serv) => serv.id !== servicioId
+      (serv) => serv._id !== servicioId
     );
     setServiciosVenta(nuevosServicios);
   };
+  
 
   const handleGuardarClick = () => {
     try {
@@ -100,7 +103,7 @@ const ModalEditarVenta = ({ open, onClose, venta, fetchVentas }) => {
         fechaCreacion: new Date(fechaCreacion),
       };
 
-      fetch(`http://localhost:9000/api/ventas/${venta.id}`, {
+      fetch(`http://localhost:9000/api/ventas/${venta._id}`, {
         method: 'PATCH',
         headers: {
           'Content-Type': 'application/json',
@@ -133,21 +136,40 @@ const ModalEditarVenta = ({ open, onClose, venta, fetchVentas }) => {
           value={fechaCreacion}
           onChange={(e) => setFechaCreacion(e.target.value)}
         />
-        <TableContainer component={Paper}>
+        <FormControlLabel
+          control={
+            <Checkbox
+              checked={estaTerminada}
+              onChange={(e) => setEstaTerminada(e.target.checked)}
+            />
+          }
+          label="Terminada"
+        />
+        <FormControlLabel
+          control={
+            <Checkbox
+              checked={estaPagada}
+              onChange={(e) => setEstaPagada(e.target.checked)}
+            />
+          }
+          label="Pagada"
+        />
+        <TableContainer component={Paper} style={{background:"lightcoral", border:"3px solid black"}}>
           <Table>
             <TableHead>
               <TableRow>
-                <TableCell>Productos</TableCell>
-                <TableCell align="right">Acciones</TableCell>
+                <TableCell style={{fontWeight:"bold"}}>Productos</TableCell>
+                <TableCell align="right" style={{fontWeight:"bold"}}>Acciones</TableCell>
               </TableRow>
             </TableHead>
             <TableBody>
               {productosVenta.map((producto) => (
-                <TableRow key={producto.id}>
-                  <TableCell>{producto.nombre}</TableCell>
+                <TableRow key={producto._id}>
+                  <TableCell style={{fontWeight:"bold"}}>{producto.nombre}</TableCell>
                   <TableCell align="right">
                     <Button
-                      onClick={() => handleQuitarProducto(producto.id)}
+                      onClick={() => handleQuitarProducto(producto._id)}
+                      style={{fontWeight:"bold"}}
                     >
                       Quitar
                     </Button>
@@ -158,37 +180,36 @@ const ModalEditarVenta = ({ open, onClose, venta, fetchVentas }) => {
           </Table>
         </TableContainer>
         <FormControl fullWidth margin="dense">
-          <InputLabel id="producto-label">Agregar Producto</InputLabel>
+          <InputLabel id="producto-label">Producto</InputLabel>
           <Select
             labelId="producto-label"
-            id="producto-select"
             value={productoSeleccionado}
             onChange={(e) => setProductoSeleccionado(e.target.value)}
           >
             {productosDisponibles.map((producto) => (
-              <MenuItem key={producto.id} value={producto.id}>
-                {producto.name} {/* Actualizamos aquí para usar 'name' */}
+              <MenuItem key={producto._id} value={producto._id}>
+                {producto.nombre}
               </MenuItem>
             ))}
           </Select>
+          <Button onClick={handleAgregarProducto} style={{border:"3px solid black"}}>Agregar Producto</Button>
         </FormControl>
-        <Button onClick={handleAgregarProducto}>Agregar Producto</Button>
-
-        <TableContainer component={Paper}>
+        <TableContainer component={Paper} style={{background:"lightgreen", border:"3px solid black"}}>
           <Table>
             <TableHead>
               <TableRow>
-                <TableCell>Servicios</TableCell>
-                <TableCell align="right">Acciones</TableCell>
+                <TableCell style={{fontWeight:"bold"}}>Servicios</TableCell>
+                <TableCell align="right" style={{fontWeight:"bold"}}>Acciones</TableCell>
               </TableRow>
             </TableHead>
             <TableBody>
               {serviciosVenta.map((servicio) => (
-                <TableRow key={servicio.id}>
-                  <TableCell>{servicio.name} {/* Actualizamos aquí para usar 'name' */}</TableCell>
+                <TableRow key={servicio._id}>
+                  <TableCell style={{fontWeight:"bold"}}>{servicio.name}</TableCell>
                   <TableCell align="right">
                     <Button
-                      onClick={() => handleQuitarServicio(servicio.id)}
+                      onClick={() => handleQuitarServicio(servicio._id)}
+                      style={{fontWeight:"bold"}}
                     >
                       Quitar
                     </Button>
@@ -199,21 +220,20 @@ const ModalEditarVenta = ({ open, onClose, venta, fetchVentas }) => {
           </Table>
         </TableContainer>
         <FormControl fullWidth margin="dense">
-          <InputLabel id="servicio-label">Agregar Servicio</InputLabel>
+          <InputLabel id="servicio-label">Servicio</InputLabel>
           <Select
             labelId="servicio-label"
-            id="servicio-select"
             value={servicioSeleccionado}
             onChange={(e) => setServicioSeleccionado(e.target.value)}
           >
             {serviciosDisponibles.map((servicio) => (
-              <MenuItem key={servicio.id} value={servicio.id}>
-                {servicio.name} {/* Actualizamos aquí para usar 'name' */}
+              <MenuItem key={servicio._id} value={servicio._id}>
+                {servicio.name}
               </MenuItem>
             ))}
           </Select>
+          <Button onClick={handleAgregarServicio} style={{border:"3px solid black"}}>Agregar Servicio</Button>
         </FormControl>
-        <Button onClick={handleAgregarServicio}>Agregar Servicio</Button>
       </DialogContent>
       <DialogActions>
         <Button onClick={onClose}>Cancelar</Button>

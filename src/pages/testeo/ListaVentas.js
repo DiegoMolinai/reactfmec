@@ -214,9 +214,12 @@ const ListaVentas = () => {
         </Grid>
       </Grid>
       <ModalAgregarVenta
-        open={isAddingVenta}
-        onClose={handleAgregarVentaModalClose}
-      />
+  open={isAddingVenta}
+  onClose={() => {
+    handleAgregarVentaModalClose();
+    fetchVentas(); // Llama a fetchVentas después de cerrar el modal de agregar
+  }}
+/>
       <ModalDetalles
         open={modalOpen}
         onClose={handleCloseModal}
@@ -224,11 +227,13 @@ const ListaVentas = () => {
       />
       {isEditingVenta && (
         <ModalEditarVenta
-          open={isEditingVenta}
-          onClose={handleEditarVentaModalClose}
-          venta={selectedVenta}
-          fetchVentas={fetchVentas}
-        />
+        open={isEditingVenta}
+        onClose={() => {
+          handleEditarVentaModalClose();
+          fetchVentas(); // Llama a fetchVentas después de cerrar el modal de editar
+        }}
+        venta={selectedVenta}
+      />
       )}
       {isDeletingVenta && (
         <ModalEliminarVenta
